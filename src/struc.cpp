@@ -5,7 +5,7 @@
 #include <string>
 #include <cmath>
 #include "struc.hpp"
-
+#include <sstream>
 
 float random_number(float r_down,float r_up){
     float r = -r_down + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(r_up-(-r_down))));
@@ -42,6 +42,30 @@ void write_struc(std::vector<Atom> mol,std::string comment){
     outFile.close();
 }
 
+std::vector<Atom> read_struc(){
+    std::vector<Atom> mol;
+    std::ifstream inFile("supercell.xyz");
+    std::string line;
+    getline(inFile,line);
+    int nAts = std::stoi(line);
+    std::cout << "Loading a structure with "<< nAts << " atoms pog"  <<std::endl;
+    getline(inFile,line); // now just for reading the line and doing nothing, this should be change for extended xyz
+    std::cout << "I am doing nothing with this info " << line << std::endl;
+    while (getline(inFile,line)){
+	std::istringstream iss(line);
+	std::string temp;
+	float tx,ty,tz;
+	iss >> temp; // skiping first column, this has to be change when more than arg
+	iss >> tx >> ty >> tz;
+	Atom tempAt = Atom(tx,ty,tz);
+	mol.push_back(tempAt);
+    }
+    
+    return mol;
+    
+}
+
+
 double pair_distance(vec3D a1,vec3D a2){
     double r2 = std::pow(a1.x-a2.x,2)+std::pow(a1.y-a2.y,2)+std::pow(a1.z-a2.z,2);
     double r = std::sqrt(r2);
@@ -73,6 +97,5 @@ double LJ_energy_mol(std::vector<Atom> mol){
 	    energy += LJ_energy_pair(d,eps_comb,sigma_comb);
 	}
     }
-
     return energy;
 }

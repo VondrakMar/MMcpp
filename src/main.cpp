@@ -6,8 +6,7 @@
 #include <cmath>
 #include "struc.hpp"
 
-// Units are in eV, and A
-// parameteres taken from https://journals.aps.org/pr/abstract/10.1103/PhysRev.136.A405
+
 
 
 int main(){
@@ -21,7 +20,8 @@ int main(){
     mol.push_back(a3);
     mol.push_back(a4);
     // std::cout << "final_energy " << energy << std::endl;
-    for (int i = 0; i <=10000; i++){
+    auto test = read_struc();
+    for (int i = 0; i <=100; i++){
 	// auto energy = LJ_energy(mol);
 
 	// std::cout << energy << "hello world\n";
@@ -32,7 +32,7 @@ int main(){
 	    iter->coord.z += rf.z;	    
 	}
 	auto energy = LJ_energy_mol(mol);
-	write_struc(mol,std::to_string(energy));
+	write_struc(test,std::to_string(energy));
     }
     
     return 0;

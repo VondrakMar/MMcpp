@@ -2,6 +2,8 @@
 #include <string>
 #include <map>
 
+// Units are in eV, and A
+// parameteres taken from https://journals.aps.org/pr/abstract/10.1103/PhysRev.136.A405
 const std::map<int,float> element_epsilons = {
     {18,0.0103}
 };
@@ -28,6 +30,7 @@ public:
 vec3D random_forces();
 
 void write_struc(std::vector<Atom> mol,std::string comment);
+std::vector<Atom> read_struc();
 double pair_distance(vec3D a1,vec3D a2);
 double LJ_energy_pair(double d,double eps,double sigma);
 double LJ_forces(double d,double eps,double sigma);
