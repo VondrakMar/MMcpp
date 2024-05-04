@@ -60,7 +60,6 @@ std::vector<Atom> read_struc(){
 	Atom tempAt = Atom(tx,ty,tz);
 	mol.push_back(tempAt);
     }
-    
     return mol;
     
 }
@@ -73,10 +72,6 @@ double pair_distance(vec3D a1,vec3D a2){
 }
 
 double LJ_energy_pair(double d,double eps,double sigma){
-    double V_ij = 4 * eps * (std::pow((sigma / d),12) - std::pow((sigma / d),6));
-    return V_ij;
-}
-double LJ_forces(double d,double eps,double sigma){
     double V_ij = 4 * eps * (std::pow((sigma / d),12) - std::pow((sigma / d),6));
     return V_ij;
 }
@@ -99,3 +94,33 @@ double LJ_energy_mol(std::vector<Atom> mol){
     }
     return energy;
 }
+
+void LJ_forces(std::vector<Atom> *mol){
+    for (auto iter = mol->begin(); iter < mol->end() ; iter++){
+	auto current_el = iter->element;
+	auto epsilon1 = element_epsilons.at(current_el);
+	auto sigma1 = element_sigma.at(current_el);
+	for (auto iter2 = iter+1; iter2 < mol->end() ; iter2++){
+	    auto current_el = iter2->element;
+	    auto epsilon2 = element_epsilons.at(current_el);
+	    auto sigma2 = element_sigma.at(current_el);
+	    auto epsilon_comb = std::sqrt(epsilon1*epsilon2);
+	    auto sigma_comb = std::sqrt(sigma1*sigma2);
+	    double dx = iter2->coord.x - iter->coord.x;
+            double dy = iter2->coord.y - iter->coord.y;
+            double dz = iter2->coord.z - iter->coord.z;
+	    double r = sqrt(dx*dx + dy*dy + dz*dz);
+            double r_inv = sigma_comb / r;
+            double r_inv6 = pow(r_inv, 6);
+            double r_inv12 = r_inv6 * r_inv6;
+            double force_mag = 24 * epsilon_comb * (2 * r_inv12 - r_inv6) * r_inv;
+            iter->force.x -= force_mag * dx * r_inv;
+            iter->force.y -= force_mag * dy * r_inv;
+            iter->force.z -= force_mag * dz * r_inv;
+            iter2->force.x += force_mag * dx * r_inv;
+            iter2->force.y += force_mag * dy * r_inv;
+            iter2->force.z += force_mag * dz * r_inv;
+	}
+    }
+}
+

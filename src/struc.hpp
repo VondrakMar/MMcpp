@@ -14,9 +14,7 @@ const std::map<int,float> element_sigma = {
 float random_number(float r_down,float r_up);
 
 struct vec3D{
-    double x;
-    double y;
-    double z;
+    double x,y,z;
 };
 
 class Atom{
@@ -35,4 +33,5 @@ double pair_distance(vec3D a1,vec3D a2);
 double LJ_energy_pair(double d,double eps,double sigma);
 double LJ_forces(double d,double eps,double sigma);
 double LJ_energy_mol(std::vector<Atom> mol);
+void LJ_forces(std::vector<Atom> *mol);
 
