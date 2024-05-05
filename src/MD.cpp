@@ -1,29 +1,43 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <cmath>
 #include "MD.hpp"
 
-void take_step(std::vector<Atom> *mol,double dt){
-    for (auto atom = mol->begin(); atom < mol->end() ; atom++){
-	atom->coord.x += atom->velocity.x * dt;
-	atom->coord.y += atom->velocity.y * dt;
-	atom->coord.z += atom->velocity.z * dt;
+void take_step(Simulation *sim,double dt){
+    if (sim->PBC) {
+        for (auto atom = sim->mol.begin(); atom < sim->mol.end() ; atom++){
+            // std::cout << " I AM HERE \n" << atom->velocity.x * dt << " " << ;
+	        atom->coord.x += atom->velocity.x * dt;
+	        atom->coord.y += atom->velocity.y * dt;
+	        atom->coord.z += atom->velocity.z * dt;
+            atom->coord.x = std::fmod(atom->coord.x,sim->box.x);
+	        atom->coord.y = std::fmod(atom->coord.y,sim->box.y);
+	        atom->coord.z = std::fmod(atom->coord.z,sim->box.z);
+        }
+    }
+    else {
+        for (auto atom = sim->mol.begin(); atom < sim->mol.end() ; atom++){
+	        atom->coord.x += atom->velocity.x * dt;
+	        atom->coord.y += atom->velocity.y * dt;
+	        atom->coord.z += atom->velocity.z * dt;
+        }
     }
 }
 
-void update_velocity(std::vector<Atom> *mol,double dt){
-    for (auto atom = mol->begin(); atom < mol->end() ; atom++){
+void update_velocity(Simulation *sim,double dt){
+    for (auto atom = sim->mol.begin(); atom < sim->mol.end() ; atom++){
 	atom->velocity.x += atom->force.x * dt;
 	atom->velocity.y += atom->force.y * dt;
 	atom->velocity.z += atom->force.z * dt;
     }
 }    
 
-void write_struc(std::vector<Atom> mol,std::string comment){
+void write_struc(Simulation sim,std::string comment){
     std::ofstream outFile("struc.xyz",std::ios::app);
-    outFile << mol.size() << std::endl;
+    outFile << sim.mol.size() << std::endl;
     outFile << comment << std::endl;
-    for (auto iter = mol.begin(); iter < mol.end() ; iter++){
+    for (auto iter = sim.mol.begin(); iter < sim.mol.end() ; iter++){
 	outFile << "Ar" << " " << iter->coord.x << " " << iter->coord.y << " " << iter->coord.z << " "    << std::endl;	
     }
     outFile.close();

@@ -11,13 +11,13 @@
 
 int main(){
     auto mol = read_struc();
-    Simulation sim_run = Simulation(mol); 
-	for (int i = 0; i <=300; i++){
-	LJ_forces(&mol);
-	update_velocity(&mol,0.01);
-	take_step(&mol,0.01);
+    Simulation sim_run = Simulation(mol,3,3,3); 
+	for (int i = 0; i <=500; i++){
+	LJ_forces(&sim_run);
+	update_velocity(&sim_run,0.01);
+	take_step(&sim_run,0.01);
 
-	write_struc(mol,"hello seamna");
+	write_struc(sim_run,"hello seamna");
     }
     return 0;
 }

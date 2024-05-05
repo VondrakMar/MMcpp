@@ -42,8 +42,5 @@ public:
 vec3D random_forces();
 double pair_distance(vec3D a1,vec3D a2);
 double LJ_energy_pair(double d,double eps,double sigma);
-double LJ_forces(double d,double eps,double sigma);
 double LJ_energy_mol(std::vector<Atom> mol);
-void LJ_forces(std::vector<Atom> *mol);
-// void take_step(std::vector<Atom> *mol,double dt);
-// void update_velocity(std::vector<Atom> *mol,double dt);
+void LJ_forces(Simulation *sim);

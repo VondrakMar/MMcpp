@@ -95,19 +95,19 @@ double LJ_energy_mol(std::vector<Atom> mol){
     return energy;
 }
 
-void LJ_forces(std::vector<Atom> *mol){
+void LJ_forces(Simulation *sim){
     // this has to be changed omg
-    for (auto iter = mol->begin(); iter < mol->end() ; iter++){
+    for (auto iter = sim->mol.begin(); iter < sim->mol.end() ; iter++){
 	iter->force.x = 0.0;
 	iter->force.y = 0.0;
 	iter->force.z = 0.0;
     }
-    for (auto iter = mol->begin(); iter < mol->end() ; iter++){
+    for (auto iter = sim->mol.begin(); iter < sim->mol.end() ; iter++){
 	auto current_el = iter->element;
 	auto epsilon1 = element_epsilons.at(current_el);
 	auto sigma1 = element_sigma.at(current_el);
 	
-	for (auto iter2 = iter+1; iter2 < mol->end() ; iter2++){
+	for (auto iter2 = iter+1; iter2 < sim->mol.end() ; iter2++){
 	    auto current_el = iter2->element;
 	    auto epsilon2 = element_epsilons.at(current_el);
 	    auto sigma2 = element_sigma.at(current_el);
