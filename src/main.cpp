@@ -4,19 +4,20 @@
 #include <map>
 #include <string>
 #include <cmath>
-#include "struc.hpp"
-
+// #include "struc.hpp"
+#include "MD.hpp"
 
 
 
 int main(){
     auto mol = read_struc();
-    for (int i = 0; i <=100; i++){
-	std::cout << "#################################\n";
+    Simulation sim_run = Simulation(mol); 
+	for (int i = 0; i <=300; i++){
 	LJ_forces(&mol);
-	for (auto iter = mol.begin(); iter < mol.end() ; iter++){
-	std::cout << iter->force.x << " " << iter->force.y << " " << iter->force.z << std::endl;
-	}
+	update_velocity(&mol,0.01);
+	take_step(&mol,0.01);
+
+	write_struc(mol,"hello seamna");
     }
     return 0;
 }

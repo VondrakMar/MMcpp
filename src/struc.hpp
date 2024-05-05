@@ -11,7 +11,7 @@ const std::map<int,float> element_sigma = {
     {18,3.4}
 };
 
-float random_number(float r_down,float r_up);
+double random_number(double r_down,double r_up);
 
 struct vec3D{
     double x,y,z;
@@ -21,17 +21,29 @@ class Atom{
 public:	
     vec3D coord;
     vec3D force;
+    vec3D velocity;
     int element;
     Atom(double X,double Y, double Z);
+    void print_coord();
+    void print_forces();
+    void print_velocity();
 };
 
-vec3D random_forces();
+class Simulation{
+public:
+    std::vector<Atom> mol;
+    bool PBC;
+    vec3D box;
+    Simulation(std::vector<Atom> Mol);
+    Simulation(std::vector<Atom> Mol,double x_box,double y_box, double z_box);
+};
 
-void write_struc(std::vector<Atom> mol,std::string comment);
-std::vector<Atom> read_struc();
+
+vec3D random_forces();
 double pair_distance(vec3D a1,vec3D a2);
 double LJ_energy_pair(double d,double eps,double sigma);
 double LJ_forces(double d,double eps,double sigma);
 double LJ_energy_mol(std::vector<Atom> mol);
 void LJ_forces(std::vector<Atom> *mol);
-
+// void take_step(std::vector<Atom> *mol,double dt);
+// void update_velocity(std::vector<Atom> *mol,double dt);

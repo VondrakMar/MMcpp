@@ -1,14 +1,16 @@
 #include <iostream>
 #include <vector>
-#include <fstream>
 #include <map>
 #include <string>
 #include <cmath>
 #include "struc.hpp"
-#include <sstream>
+#include <random>
 
-float random_number(float r_down,float r_up){
-    float r = -r_down + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(r_up-(-r_down))));
+
+double random_number(double r_down,double r_up){
+    //double r = -r_down + static_cast <double> (rand()) /( static_cast <double> (RAND_MAX/(r_up-(-r_down))));
+    double r = (double)(rand())/RAND_MAX;
+    r = r_down + r*(r_up-r_down);
     return r;
 }
 
@@ -19,8 +21,36 @@ Atom::Atom(double X,double Y, double Z){
 	force.x = random_number(-0.1,0.1);
 	force.y = random_number(-0.1,0.1);
 	force.z = random_number(-0.1,0.1);
+	velocity.x = random_number(-1,1);
+	velocity.y = random_number(-1,1);
+	velocity.z = random_number(-1,1);
 	element = 18;
 }
+
+void Atom::print_coord(){
+    std::cout << this->coord.x << " " << this->coord.y << " " << this->coord.z << "\n"; 
+}
+void Atom::print_forces(){
+    std::cout << this->force.x << " " << this->force.y << " " << this->force.z << "\n"; 
+}
+void Atom::print_velocity(){
+    std::cout << this->velocity.x << " " << this->velocity.y << " " << this->velocity.z << "\n"; 
+}
+
+
+Simulation::Simulation(std::vector<Atom> Mol){
+    mol = Mol;
+    PBC = false;
+}
+Simulation::Simulation(std::vector<Atom> Mol,double x_box,double y_box, double z_box){
+    mol = Mol;
+    PBC = true;
+    box.x = x_box;
+    box.y = y_box;
+    box.z = z_box;
+}
+
+
 
 vec3D random_forces(){
     vec3D rf;
@@ -32,37 +62,7 @@ vec3D random_forces(){
     return rf;
 }
 
-void write_struc(std::vector<Atom> mol,std::string comment){
-    std::ofstream outFile("struc.xyz",std::ios::app);
-    outFile << mol.size() << std::endl;
-    outFile << comment << std::endl;
-    for (auto iter = mol.begin(); iter < mol.end() ; iter++){
-	outFile << "Ar" << " " << iter->coord.x << " " << iter->coord.y << " " << iter->coord.z << " "    << std::endl;	
-    }
-    outFile.close();
-}
 
-std::vector<Atom> read_struc(){
-    std::vector<Atom> mol;
-    std::ifstream inFile("supercell.xyz");
-    std::string line;
-    getline(inFile,line);
-    int nAts = std::stoi(line);
-    std::cout << "Loading a structure with "<< nAts << " atoms pog"  <<std::endl;
-    getline(inFile,line); // now just for reading the line and doing nothing, this should be change for extended xyz
-    std::cout << "I am doing nothing with this info " << line << std::endl;
-    while (getline(inFile,line)){
-	std::istringstream iss(line);
-	std::string temp;
-	float tx,ty,tz;
-	iss >> temp; // skiping first column, this has to be change when more than arg
-	iss >> tx >> ty >> tz;
-	Atom tempAt = Atom(tx,ty,tz);
-	mol.push_back(tempAt);
-    }
-    return mol;
-    
-}
 
 
 double pair_distance(vec3D a1,vec3D a2){
@@ -96,10 +96,17 @@ double LJ_energy_mol(std::vector<Atom> mol){
 }
 
 void LJ_forces(std::vector<Atom> *mol){
+    // this has to be changed omg
+    for (auto iter = mol->begin(); iter < mol->end() ; iter++){
+	iter->force.x = 0.0;
+	iter->force.y = 0.0;
+	iter->force.z = 0.0;
+    }
     for (auto iter = mol->begin(); iter < mol->end() ; iter++){
 	auto current_el = iter->element;
 	auto epsilon1 = element_epsilons.at(current_el);
 	auto sigma1 = element_sigma.at(current_el);
+	
 	for (auto iter2 = iter+1; iter2 < mol->end() ; iter2++){
 	    auto current_el = iter2->element;
 	    auto epsilon2 = element_epsilons.at(current_el);
@@ -109,7 +116,7 @@ void LJ_forces(std::vector<Atom> *mol){
 	    double dx = iter2->coord.x - iter->coord.x;
             double dy = iter2->coord.y - iter->coord.y;
             double dz = iter2->coord.z - iter->coord.z;
-	    double r = sqrt(dx*dx + dy*dy + dz*dz);
+	        double r = sqrt(dx*dx + dy*dy + dz*dz);
             double r_inv = sigma_comb / r;
             double r_inv6 = pow(r_inv, 6);
             double r_inv12 = r_inv6 * r_inv6;
