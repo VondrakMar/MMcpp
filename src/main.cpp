@@ -19,13 +19,12 @@ int main(){
     // Simulation sim_run = Simulation(mol,3.5,3.5,3.5);
     Simulation sim_run = Simulation(mol);
     read_input(&sim_run,"input.md");
-    for (int i = 0; i <=100; i++){
-    	LJ_forces(&sim_run);
-    	update_velocity(&sim_run,1e-15);
-    	take_step(&sim_run,1e-15);
-    	// write_struc(sim_run,"Lattice=\"20.0 0.0 0.0 0.0 20.0 0.0 0.0 0.0 20.0\" Properties=species:S:1:pos:R:3 pbc=\"T T T\"");
-    	write_struc(sim_run,"struc.xyz","why is this happening");
-	
-    }
+    // for (int i = 0; i <=100; i++){
+    // 	LJ_forces(&sim_run);
+    // 	update_velocity(&sim_run,1e-15);
+    // 	take_step(&sim_run,1e-15);
+    // 	// write_struc(sim_run,"Lattice=\"20.0 0.0 0.0 0.0 20.0 0.0 0.0 0.0 20.0\" Properties=species:S:1:pos:R:3 pbc=\"T T T\"");
+    // 	write_struc(sim_run,"struc.xyz","why is this happening");
+    // }
     return 0;
 }

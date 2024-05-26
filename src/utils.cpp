@@ -45,5 +45,20 @@ std::vector<Atom> read_struc(){
 
 void read_input(Simulation *sim,std::string file_name){
     std::ifstream inFile(file_name);
-    
+    std::string line;
+    std::cout << "Loading input file\n";
+    while (getline(inFile,line)){
+        std::istringstream iss(line);
+        std::string keyword;
+        iss >> keyword;
+        if (keyword.compare("pbc") == 0){
+            iss >> keyword;
+            if (keyword.compare("true") == 0){
+                sim->PBC=true;
+            }
+        else{
+            sim->PBC=false;
+        }
+        }
+    }
 }
